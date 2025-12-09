@@ -3,6 +3,20 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 
+@layer base {
+  body {
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* p-menubar */
+  div:has(> a.p-menubar-item-link-active) {
+    background: var(--p-highlight-background);
+    color: var(--p-highlight-color);
+  }
+}
+
 @layer utilities {
   .auth-form {
     background: transparent linear-gradient(133deg, #222d5466, #222d5429) 0% 0% no-repeat
