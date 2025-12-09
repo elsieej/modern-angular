@@ -4,11 +4,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-protected-layout',
   imports: [RouterOutlet],
-  template: `
-    <router-outlet />
-  `,
+  template: ` <router-outlet /> `,
   styles: ``,
 })
-export class ProtectedLayout {
-
-}
+export class ProtectedLayout {}
