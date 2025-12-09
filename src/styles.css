@@ -1,3 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+@layer utilities {
+  .auth-form {
+    background: transparent linear-gradient(133deg, #222d5466, #222d5429) 0% 0% no-repeat
+      padding-box;
+    box-shadow: 16px 16px 50px #00000029;
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
+  }
+}

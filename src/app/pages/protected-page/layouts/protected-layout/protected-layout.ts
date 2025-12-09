@@ -2,9 +2,13 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-protected-layout',
   imports: [RouterOutlet],
-  template: ` <router-outlet /> `,
-  styles: [``],
+  template: `
+    <router-outlet />
+  `,
+  styles: ``,
 })
-export class App {}
+export class ProtectedLayout {
+
+}
