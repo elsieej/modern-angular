@@ -1,4 +1,4 @@
-import { AuthService } from '@/app/cores/services/auth-service/auth-service';
+import { AuthService } from '@/app/cores/services/apis/auth-service/auth-service';
 import AuthStore from '@/app/cores/stores/auth-store';
 import { LoginDto } from '@/app/types/apis/dtos/login-dto';
 import { LoadingStatus } from '@/app/types/apis/responses/api-response';

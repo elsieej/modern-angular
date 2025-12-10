@@ -33,6 +33,7 @@
     "@ngrx/operators": "^21.0.0-beta.0",
     "@ngrx/signals": "^21.0.0-beta.0",
     "@primeuix/themes": "^2.0.2",
+    "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "primeng": "^21.0.1",
     "rxjs": "~7.8.0",

@@ -1,5 +1,5 @@
 const API_CONFIG = {
-  baseUrl: 'http://192.168.1.202:8091',
+  baseUrl: 'http://tris.ddns.net:8094',
 };
 
 export default API_CONFIG;

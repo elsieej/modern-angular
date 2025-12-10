@@ -44,4 +44,27 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'error',
+    loadComponent: () =>
+      import('./pages/public-page/layouts/public-layouts/public-layouts').then(
+        (m) => m.PublicLayouts,
+      ),
+    children: [
+      {
+        path: 'not-found',
+        loadComponent: () =>
+          import('./pages/public-page/not-found/not-found').then((m) => m.NotFound),
+      },
+    ],
+  },
+  {
+    path: '',
+    redirectTo: 'auth',
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    redirectTo: 'error/not-found',
+  },
 ];

@@ -6,7 +6,7 @@ import Aura from '@primeuix/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { authInterceptor } from './cores/interceptors/auth-interceptor/auth-interceptor';
-import { errorInterceptor } from './cores/interceptors/error-interceptor/error-interceptor';
+import { refreshInterceptor } from './cores/interceptors/refresh-interceptor/refresh-interceptor';
 
 const Noir = definePreset(Aura, {
   semantic: {
@@ -36,7 +36,7 @@ const Noir = definePreset(Aura, {
           focusBackground: '{zinc.700}',
           color: '#ffffff',
           focusColor: '#ffffff',
-        }
+        },
       },
       dark: {
         primary: {
@@ -60,7 +60,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor, refreshInterceptor])),
     providePrimeNG({
       theme: {
         preset: Noir,
