@@ -1,3 +1,4 @@
+import STORAGE_KEYS from '@/app/constants/storage-key-config';
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
@@ -18,7 +19,7 @@ export class ThemeService {
 
   public toggleTheme() {
     this.isDarkMode.update((current) => !current);
-    this.localStorageService.setItem('theme', this.isDarkMode() ? 'dark' : 'light');
+    this.localStorageService.setItem(STORAGE_KEYS.THEME, this.isDarkMode() ? 'dark' : 'light');
     this.updateClass();
   }
 

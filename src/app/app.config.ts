@@ -1,11 +1,14 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
+import { GlobalErrorHandler } from './cores/handlers/global-error-handler';
 import { authInterceptor } from './cores/interceptors/auth-interceptor/auth-interceptor';
+import { errorInterceptor } from './cores/interceptors/error-interceptor/error-interceptor';
 import { refreshInterceptor } from './cores/interceptors/refresh-interceptor/refresh-interceptor';
 
 const Noir = definePreset(Aura, {
@@ -60,7 +63,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor, refreshInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor, refreshInterceptor, errorInterceptor]),
+    ),
     providePrimeNG({
       theme: {
         preset: Noir,
@@ -73,5 +79,10 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    MessageService,
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
   ],
 };

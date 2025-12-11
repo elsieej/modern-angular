@@ -1,9 +1,10 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
-import { LocalStorageService } from '../services/local-storage-service/local-storage-service';
+import { LocalStorageService } from '@/app/cores/services/local-storage-service/local-storage-service';
 import { TokenInfoResponse } from '@/app/types/apis/responses/token-info-response';
 import { LoginResponse } from '@/app/types/apis/responses/login-response';
-import { JwtdecodeService } from '../services/jwtdecode-service/jwtdecode-service';
+import { JwtdecodeService } from '@/app/cores/services/jwtdecode-service/jwtdecode-service';
+import STORAGE_KEYS from '@/app/constants/storage-key-config';
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -29,14 +30,14 @@ const AuthStore = signalStore(
       jwtdecodeService = inject(JwtdecodeService),
     ) => ({
       setAuth: (accessToken: string, refreshToken: string) => {
-        localStorageService.setItem('accessToken', accessToken);
-        localStorageService.setItem('refreshToken', refreshToken);
+        localStorageService.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+        localStorageService.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
         const tokenInfo = jwtdecodeService.parseToken<TokenInfoResponse>(accessToken);
         patchState(store, { accessToken, refreshToken, tokenInfo, isAuthenticated: true });
       },
       removeAuth: () => {
-        localStorageService.removeItem('accessToken');
-        localStorageService.removeItem('refreshToken');
+        localStorageService.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+        localStorageService.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
         patchState(store, {
           accessToken: null,
           refreshToken: null,
@@ -46,10 +47,12 @@ const AuthStore = signalStore(
       },
       loadTokenInfo: () => {
         let tokenInfo: TokenInfoResponse | null = null;
-        const accessToken =
-          localStorageService.getItem<LoginResponse['accessToken']>('accessToken');
-        const refreshToken =
-          localStorageService.getItem<LoginResponse['refreshToken']>('refreshToken');
+        const accessToken = localStorageService.getItem<LoginResponse['accessToken']>(
+          STORAGE_KEYS.ACCESS_TOKEN,
+        );
+        const refreshToken = localStorageService.getItem<LoginResponse['refreshToken']>(
+          STORAGE_KEYS.REFRESH_TOKEN,
+        );
 
         if (accessToken) {
           tokenInfo = jwtdecodeService.parseToken<TokenInfoResponse>(accessToken);
