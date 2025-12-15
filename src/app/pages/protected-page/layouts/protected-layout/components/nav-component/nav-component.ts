@@ -4,7 +4,7 @@ import { ThemeService } from '@/app/cores/services/theme-service/theme-service';
 import AuthStore from '@/app/cores/stores/auth-store';
 import { NgOptimizedImage } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
@@ -26,7 +26,7 @@ import { TooltipModule } from 'primeng/tooltip';
     PopoverModule,
     TooltipModule,
     ToggleSwitchModule,
-    ReactiveFormsModule,
+    FormsModule,
   ],
   template: `
     <nav>
@@ -74,7 +74,10 @@ import { TooltipModule } from 'primeng/tooltip';
                     ></path>
                   </svg>
                 </span>
-                <p-toggleSwitch [formControl]="toggleForm" (onChange)="toggleDarkMode()" />
+                <p-toggleSwitch
+                  [ngModel]="themeService.isDarkMode()"
+                  (ngModelChange)="toggleDarkMode()"
+                />
                 <span class="opacity-30 dark:opacity-100 transition-colors">
                   <!-- moon icon -->
                   <svg
@@ -142,9 +145,6 @@ export class NavComponent {
 
   public authStore = inject(AuthStore);
   public themeService = inject(ThemeService);
-
-  private fb = inject(FormBuilder);
-  public toggleForm = this.fb.nonNullable.control(this.themeService.isDarkMode());
 
   public appVersion = APP_VERSION;
 

@@ -9,7 +9,17 @@ const BranchFilterStore = signalStore(
       const data = branchTreeViewStore.data();
       if (!data) return [];
       return data
-        .flatMap((branch) => [branch, ...branch.children])
+        .flatMap((branch) => branch.children)
+        .map((branch) => ({
+          label: branch.name,
+          value: branch.id,
+        }));
+    }),
+    selectAllOptions: computed(() => {
+      const data = branchTreeViewStore.data();
+      if (!data) return [];
+      return data
+        .flatMap((branch) => branch.children)
         .map((branch) => ({
           label: branch.name,
           value: branch.id,

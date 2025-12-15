@@ -7,7 +7,7 @@ import { DashboardFilterComponent } from './components/dashboard-filter-componen
   selector: 'app-dashboard',
   imports: [DashboardFilterComponent, DashboardCameraGroupStatisticComponent],
   template: `
-    <div class="space-y-4">
+    <div class="space-y-4 py-4">
       <app-dashboard-filter-component />
       <app-dashboard-camera-group-statistic-component />
     </div>
