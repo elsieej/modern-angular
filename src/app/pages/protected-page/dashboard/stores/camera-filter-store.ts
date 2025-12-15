@@ -38,7 +38,8 @@ const CameraFilterStore = signalStore(
 );
 
 const extractCamerasFromTree = (tree: BranchResponse[]) => {
-  const allCameraGroups = tree.flatMap((branch) => branch.cameraGroups ?? []);
+  const allChildBranches = tree.flatMap((branch) => branch.children ?? []);
+  const allCameraGroups = allChildBranches.flatMap((branch) => branch.cameraGroups ?? []);
   const allCameras = allCameraGroups.flatMap(
     (cameraGroup) =>
       cameraGroup?.cameras.map((c) => ({
