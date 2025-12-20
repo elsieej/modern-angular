@@ -8,3 +8,5 @@ export type MultiSelectOption = {
   label: string;
   value: number;
 };
+
+export type DateRangePicker = [Date | null, Date | null];

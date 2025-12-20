@@ -29,7 +29,14 @@ const StatisticCameraGroupStore = signalStore(
         tap(() => patchState(store, { loading: 'loading' })),
         switchMap(({ dto }) => statisticService.getStatisticCameraGroups(dto)),
         tapResponse({
-          next: (response) => patchState(store, { data: response.data, loading: 'success' }),
+          next: (response) => {
+            const data = response.data;
+            if (data.length > 0) {
+              patchState(store, { data: data[0], loading: 'success' });
+            } else {
+              patchState(store, { data: null, loading: 'success' });
+            }
+          },
           error: (error: HttpErrorResponse) =>
             patchState(store, { error: error.message, loading: 'error' }),
         }),

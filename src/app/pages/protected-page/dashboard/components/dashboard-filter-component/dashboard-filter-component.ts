@@ -1,24 +1,32 @@
 import BranchFilterStore from '@/app/pages/protected-page/dashboard/stores/branch-filter-store';
 import CameraFilterStore from '@/app/pages/protected-page/dashboard/stores/camera-filter-store';
 import CameraGroupFilterStore from '@/app/pages/protected-page/dashboard/stores/camera-group-filter-store';
-import { MultiSelectOption } from '@/app/types/form-type';
-import { Component, DestroyRef, effect, inject, OnInit } from '@angular/core';
+import { DashboardFilterForm } from '@/app/pages/protected-page/dashboard/types/dashboard-filter-form.type';
+import { DateRangePicker, FormModel, MultiSelectOption } from '@/app/types/form-type';
+import { Component, DestroyRef, effect, inject, OnInit, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import dayjs from 'dayjs';
+import { DatePickerModule } from 'primeng/datepicker';
 import { FieldsetModule } from 'primeng/fieldset';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import DashboardCameraGroupCriteriaStore from '../dashboard-camera-group-statistic-component/stores/dashboard-camera-group-criteria-store';
 @Component({
   selector: 'app-dashboard-filter-component',
   providers: [BranchFilterStore, CameraGroupFilterStore, CameraFilterStore],
-  imports: [ReactiveFormsModule, MultiSelectModule, FloatLabelModule, FieldsetModule],
+  imports: [
+    ReactiveFormsModule,
+    MultiSelectModule,
+    FloatLabelModule,
+    FieldsetModule,
+    DatePickerModule,
+  ],
   template: `
     <p-fieldset legend="Bộ lọc">
       <form [formGroup]="filterForm">
-        <div class="flex w-full gap-x-4">
-          <p-floatlabel variant="on" class="w-72">
+        <div class="flex w-full gap-4 flex-wrap">
+          <p-floatlabel variant="on" class="shrink-0 grow sm:basis-72  sm:max-w-72">
             <p-multiSelect
               formControlName="branchId"
               inputId="branch-filter"
@@ -31,7 +39,7 @@ import DashboardCameraGroupCriteriaStore from '../dashboard-camera-group-statist
             <label for="branch-filter">Chi nhánh</label>
           </p-floatlabel>
 
-          <p-floatlabel variant="on" class="w-72">
+          <p-floatlabel variant="on" class="shrink-0 grow sm:basis-72  sm:max-w-72">
             <p-multiSelect
               formControlName="cameraGroupId"
               inputId="camera-group-filter"
@@ -44,7 +52,7 @@ import DashboardCameraGroupCriteriaStore from '../dashboard-camera-group-statist
             <label for="camera-group-filter">Khu vực</label>
           </p-floatlabel>
 
-          <p-floatlabel variant="on" class="w-72">
+          <p-floatlabel variant="on" class="shrink-0 grow sm:basis-72  sm:max-w-72">
             <p-multiSelect
               formControlName="cameraId"
               inputId="camera-filter"
@@ -55,6 +63,19 @@ import DashboardCameraGroupCriteriaStore from '../dashboard-camera-group-statist
               [loading]="cameraFilterStore.isLoading()"
             />
             <label for="camera-filter">Camera</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" class="shrink-0 grow sm:basis-72 sm:max-w-72">
+            <p-datePicker
+              formControlName="date"
+              inputId="date-filter"
+              class="w-full"
+              [fluid]="true"
+              [showIcon]="true"
+              selectionMode="range"
+              dateFormat="dd/mm/yy"
+            />
+            <label for="date-filter">Ngày</label>
           </p-floatlabel>
         </div>
       </form>
@@ -67,15 +88,28 @@ export class DashboardFilterComponent implements OnInit {
   public cameraGroupFilterStore = inject(CameraGroupFilterStore);
   public cameraFilterStore = inject(CameraFilterStore);
 
-  private dashboardCameraGroupCriteriaStore = inject(DashboardCameraGroupCriteriaStore);
+  public onChangesFilterForm = output<
+    | {
+        type: 'branchIds' | 'cameraGroupIds' | 'cameraIds' | 'date';
+        value: number[] | null;
+      }
+    | {
+        type: 'date';
+        value: DateRangePicker | null;
+      }
+  >();
 
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
 
-  public filterForm = this.fb.nonNullable.group({
-    branchId: [[] as MultiSelectOption[]],
-    cameraGroupId: [[] as MultiSelectOption[]],
-    cameraId: [[] as MultiSelectOption[]],
+  public filterForm: FormGroup<FormModel<DashboardFilterForm>> = this.fb.group({
+    branchId: this.fb.control<MultiSelectOption[] | null>(null),
+    cameraGroupId: this.fb.control<MultiSelectOption[] | null>(null),
+    cameraId: this.fb.control<MultiSelectOption[] | null>(null),
+    date: this.fb.nonNullable.control<DateRangePicker>([
+      dayjs().startOf('day').toDate(),
+      dayjs().endOf('day').toDate(),
+    ]),
   });
 
   constructor() {
@@ -83,8 +117,9 @@ export class DashboardFilterComponent implements OnInit {
       const allBranches = this.branchFilterStore.selectAllOptions();
       if (allBranches.length > 0) {
         this.filterForm.controls.branchId.patchValue(allBranches, { emitEvent: false });
-        this.dashboardCameraGroupCriteriaStore.updateFilter({
-          branchIds: allBranches.map((v) => v.value),
+        this.onChangesFilterForm.emit({
+          type: 'branchIds',
+          value: allBranches.map((v) => v.value),
         });
       }
     });
@@ -93,8 +128,9 @@ export class DashboardFilterComponent implements OnInit {
       const validCameraGroups = this.cameraGroupFilterStore.extractFromTreeView();
       if (validCameraGroups.length > 0) {
         this.filterForm.controls.cameraGroupId.patchValue(validCameraGroups, { emitEvent: false });
-        this.dashboardCameraGroupCriteriaStore.updateFilter({
-          cameraGroupIds: validCameraGroups.map((v) => v.value),
+        this.onChangesFilterForm.emit({
+          type: 'cameraGroupIds',
+          value: validCameraGroups.map((v) => v.value),
         });
       }
     });
@@ -111,17 +147,30 @@ export class DashboardFilterComponent implements OnInit {
     this.filterForm.controls.branchId.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((options) => {
-        const ids = options.map((v) => v.value);
-        this.dashboardCameraGroupCriteriaStore.updateFilter({ branchIds: ids });
+        const ids = options?.map((v) => v.value) ?? [];
         this.cameraGroupFilterStore.setSelectedBranchIds(ids);
+        this.onChangesFilterForm.emit({ type: 'branchIds', value: ids });
       });
 
     this.filterForm.controls.cameraGroupId.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((options) => {
-        const ids = options.map((v) => v.value);
-        this.dashboardCameraGroupCriteriaStore.updateFilter({ cameraGroupIds: ids });
+        const ids = options?.map((v) => v.value) ?? [];
         this.cameraFilterStore.setSelectedCameraGroupIds(ids);
+        this.onChangesFilterForm.emit({ type: 'cameraGroupIds', value: ids });
+      });
+
+    this.filterForm.controls.date.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const dateFrom = value?.[0] ?? null;
+        const dateTo = value?.[1] ?? null;
+        const dateValue =
+          dateFrom && dateTo ? ([dateFrom, dateTo] satisfies DateRangePicker) : null;
+        this.onChangesFilterForm.emit({
+          type: 'date',
+          value: dateValue,
+        });
       });
   }
 }

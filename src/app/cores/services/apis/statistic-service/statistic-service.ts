@@ -13,7 +13,7 @@ export class StatisticService {
   private baseUrl = `${API_CONFIG.baseUrl}/statistics`;
 
   public getStatisticCameraGroups(dto: StatisticDto) {
-    return this.http.post<ApiResponse<StatisticCameraGroupResponse>>(
+    return this.http.post<ApiResponse<StatisticCameraGroupResponse[]>>(
       `${this.baseUrl}/camera-groups`,
       dto,
     );
